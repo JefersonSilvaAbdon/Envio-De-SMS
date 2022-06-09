@@ -1,13 +1,15 @@
-#Você vai precisar do Pandas - pip install pandas
-#Você vai precisar do Twilio - pip install twilio
+#Você vai precisar do Pandas
+#Você vai precisar do smtplib
+#Você vai precisar do pip install openpyxl
 
+import smtplib
+from email.message import EmailMessage
 import pandas as pd
-from twilio.rest import Client
-# Pegar seu SSID no site twilio.com/console
-account_sid = "seu ssid"
-# Pegar seu token no site twilio.com/console
-auth_token  = "seu token"
-client = Client(account_sid, auth_token)
+import win32com.client as client
+
+# Dados E-mail
+#Email = 'apitestar40@gmail.com'
+#Email_senha = 'unijorge2022'
 
 # Abrir o arquivo excel
 lista_meses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho']
@@ -19,10 +21,26 @@ for mes in lista_meses:
     if (tabela_vendas['Vendas'] > 55000).any():
         vendedor = tabela_vendas.loc[tabela_vendas['Vendas'] > 55000,'Vendedor'].values[0]
         vendas = tabela_vendas.loc[tabela_vendas['Vendas'] > 55000, 'Vendas'].values[0]
-        message = client.messages.create(
-            to="+5571-seunumeroparareceber-",
-            from_="+numerodotwilio",
-            body=f'No mês de {mes}, {vendedor} bateu a meta com R${vendas} reais')
-        print(message.sid)
+        outlook = client.Dispatch('Outlook.Application')
+        message = outlook.CreateItem(0)
+        message.Display()
+        message.To = "201001737@unijorge.com.br"
+        message.Subject = "ALGUÉM BATEU A META"
+        message.Body = (f'No mês de {mes}, {vendedor} bateu a meta com R${vendas} reais')
+        message.Save()
+        message.Send()
+        #Criar email
+        #msg = EmailMessage()
+        #msg['Subject'] = 'ALGUEM BATEU A META'
+        #msg['From'] = "apitestar40@gmail.com"
+        #msg['To'] = "201001737@unijorge.com.br"
+        #msg.set_content(f'No mês de {mes}, {vendedor} bateu a meta com R${vendas} reais')
+
+#Enviar o e-mail
+#with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+#   smtp.login(Email, Email_senha)
+#    smtp.send_message(msg)
+
+#        print(message.sid)
 
 # Caso não seja maior do que 55.000 não quero fazer nada
